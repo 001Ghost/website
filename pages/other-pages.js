@@ -1,94 +1,32 @@
 /* OTHER PAGES: Exposition, Events, Academie, Contact */
 import { IMAGES } from '../js/config.js';
 import { arrowSVG } from '../js/helpers.js';
+import { getArticlesByCategory } from '../js/articles-data.js';
 
 /* ─── EXPOSITION PAGE ─── */
 export function renderExposition(t, lang) {
   const tr = t().expositions;
-  return `
-<div class="page-entry">
+  const articles = getArticlesByCategory('exhibition');
 
-  <!-- EXPO HERO -->
-  <section class="expo-hero">
-    <img src="${IMAGES.exhibition}" alt="Paris Wine & Baijiu 2024" loading="eager"/>
-    <div class="expo-hero-overlay">
-      <div class="expo-hero-text">
-        <p class="label label-gold" style="margin-bottom:1rem;">${tr.overline}</p>
-        <h1 style="color:#fff;font-size:clamp(2rem,6vw,5rem);line-height:1.02;">${tr.title}</h1>
-        <p style="color:rgba(255,255,255,0.75);margin-top:1rem;max-width:40rem;font-size:1rem;line-height:1.6;">${tr.lead}</p>
+  const articleCard = (a) => `
+    <article class="blog-card reveal">
+      <div class="blog-card-img">
+        ${a.image
+          ? `<img src="${a.image}" alt="${a.title[lang] || a.title.fr}" loading="lazy"/>`
+          : `<div class="blog-card-img-placeholder"></div>`
+        }
       </div>
-    </div>
-  </section>
-
-  <!-- HERO BODY -->
-  <section class="section">
-    <div class="wrapper">
-      <div class="grid-2" style="gap:4rem;align-items:start;">
-        <div class="reveal">
-          <p class="lead">${tr.heroBody}</p>
-        </div>
-        <div class="reveal" style="transition-delay:100ms;">
-          <div class="img-wrap ratio-4-3" style="border-radius:4px;">
-            <img src="${IMAGES.plant}" alt="Exhibition tasting" loading="lazy"/>
-          </div>
-        </div>
+      <div class="blog-card-body">
+        <p class="blog-card-date">${a.date}</p>
+        <h3 class="blog-card-title">${a.title[lang] || a.title.fr}</h3>
+        <p class="blog-card-excerpt">${a.excerpt[lang] || a.excerpt.fr}</p>
+        <a href="/exposition/${a.slug}" data-nav="/exposition/${a.slug}" class="btn btn-primary" style="margin-top:1.25rem;display:inline-block;">
+          ${lang === 'zh' ? '阅读更多' : lang === 'fr' ? 'Lire plus' : 'Read more'}
+        </a>
       </div>
-    </div>
-  </section>
+    </article>
+  `;
 
-  <!-- THREE SECTIONS -->
-  <section class="section section-cream">
-    <div class="wrapper">
-      <div style="display:flex;flex-direction:column;gap:4rem;">
-        ${[
-          { title: tr.section1Title, body: tr.section1Body, img: IMAGES.cultural },
-          { title: tr.section2Title, body: tr.section2Body, img: IMAGES.fermentation },
-          { title: tr.section3Title, body: tr.section3Body, img: IMAGES.map },
-        ].map((s, i) => `
-          <div class="grid-2 reveal" style="gap:3rem;align-items:center;${i%2===1?'':''}">
-            ${i % 2 === 0 ? `
-              <div>
-                <p class="label mb-2">0${i+1}</p>
-                <h3 class="serif" style="margin-bottom:1rem;">${s.title}</h3>
-                <p style="font-size:0.9375rem;color:var(--ink-2);line-height:1.75;">${s.body}</p>
-              </div>
-              <div class="img-wrap ratio-4-3" style="border-radius:4px;">
-                <img src="${s.img}" alt="${s.title}" loading="lazy"/>
-              </div>
-            ` : `
-              <div class="img-wrap ratio-4-3" style="border-radius:4px;">
-                <img src="${s.img}" alt="${s.title}" loading="lazy"/>
-              </div>
-              <div>
-                <p class="label mb-2">0${i+1}</p>
-                <h3 class="serif" style="margin-bottom:1rem;">${s.title}</h3>
-                <p style="font-size:0.9375rem;color:var(--ink-2);line-height:1.75;">${s.body}</p>
-              </div>
-            `}
-          </div>
-        `).join('')}
-      </div>
-    </div>
-  </section>
-
-  <!-- NEXT EDITION CTA -->
-  <section class="section-sm" style="background:var(--ink);">
-    <div class="wrapper" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;">
-      <div>
-        <p style="color:rgba(255,255,255,0.5);font-size:11px;letter-spacing:0.25em;text-transform:uppercase;font-weight:600;margin-bottom:0.5rem;">${lang === 'zh' ? '2025年版' : lang === 'fr' ? 'Édition 2025' : '2025 Edition'}</p>
-        <h3 class="serif" style="color:#fff;">${lang === 'zh' ? '更大规模，更多内容' : lang === 'fr' ? 'Plus grand, plus riche' : 'Bigger, richer program'}</h3>
-      </div>
-      <a href="/contact" data-nav="/contact" class="btn btn-ghost-white">${lang === 'zh' ? '联系我们' : lang === 'fr' ? 'Nous contacter' : 'Get in touch'} ${arrowSVG()}</a>
-    </div>
-  </section>
-
-</div>`;
-}
-
-/* ─── EVENTS PAGE ─── */
-export function renderEvents(t, lang) {
-  const tr = t().events;
-  const ch = tr.changyu;
   return `
 <div class="page-entry">
 
@@ -103,63 +41,77 @@ export function renderEvents(t, lang) {
     </div>
   </section>
 
-  <!-- CHANGYU HERO SPOTLIGHT -->
-  <div class="changyu-hero reveal">
+  <!-- ARTICLES GRID -->
+  <section class="section section-cream">
     <div class="wrapper">
-      <div class="grid-2" style="gap:4rem;align-items:start;">
-        <div>
-          <p class="label label-gold mb-2">${ch.overline}</p>
-          <h2 style="color:#fff;margin-bottom:1.5rem;">${ch.title}</h2>
-          <p style="color:rgba(255,255,255,0.75);font-size:0.9375rem;line-height:1.75;margin-bottom:1.5rem;">${ch.body}</p>
-          <p style="color:rgba(255,255,255,0.65);font-size:0.9rem;line-height:1.75;">${ch.bodyExtra}</p>
-          <div class="changyu-stats">
-            ${ch.stats.map(s => `
-              <div class="changyu-stat">
-                <div class="changyu-stat-num">${s.num}</div>
-                <div class="changyu-stat-label">${s.label}</div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-        <div>
-          <div class="img-wrap ratio-4-3" style="border-radius:4px;">
-            <img src="${IMAGES.changyu}" alt="Changyu winery" loading="lazy"/>
-          </div>
-          <div class="img-wrap ratio-16-9" style="border-radius:4px;margin-top:1rem;">
-            <img src="${IMAGES.castle}" alt="Changyu wine cellar" loading="lazy"/>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- OTHER EVENTS -->
-  <section class="section">
-    <div class="wrapper">
-      <div class="reveal">
-        <div class="section-title-block mb-4">
-          <p class="label">${lang === 'zh' ? '近期活动' : lang === 'fr' ? 'Événements récents' : 'Recent Events'}</p>
-          <div class="divider-line"></div>
-        </div>
-      </div>
-      <div class="grid-3" style="gap:1.25rem;">
-        ${tr.otherEvents.map((ev, i) => `
-          <div class="event-card reveal" style="transition-delay:${i*80}ms;">
-            <div class="event-date">${ev.date}</div>
-            <div class="event-title">${ev.title}</div>
-            <div class="event-desc">${ev.desc}</div>
-          </div>
-        `).join('')}
+      <div class="blog-grid">
+        ${articles.map(articleCard).join('')}
       </div>
     </div>
   </section>
 
-  <!-- BAIJIU IMAGE -->
-  <div class="wrapper-wide reveal" style="margin-bottom:4rem;">
-    <div class="img-wrap ratio-21-9" style="border-radius:4px;">
-      <img src="${IMAGES.event}" alt="Baijiu event" loading="lazy"/>
+  <!-- CTA -->
+  <section class="section-sm" style="background:var(--ink);">
+    <div class="wrapper" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;">
+      <div>
+        <p style="color:rgba(255,255,255,0.5);font-size:11px;letter-spacing:0.25em;text-transform:uppercase;font-weight:600;margin-bottom:0.5rem;">${lang === 'zh' ? '2025年版' : lang === 'fr' ? 'Édition 2025' : '2025 Edition'}</p>
+        <h3 class="serif" style="color:#fff;">${lang === 'zh' ? '更大规模，更多内容' : lang === 'fr' ? 'Plus grand, plus riche' : 'Bigger, richer program'}</h3>
+      </div>
+      <a href="/contact" data-nav="/contact" class="btn btn-ghost-white">${lang === 'zh' ? '联系我们' : lang === 'fr' ? 'Nous contacter' : 'Get in touch'} ${arrowSVG()}</a>
     </div>
-  </div>
+  </section>
+
+</div>`;
+}
+
+
+
+//* ─── EVENTS PAGE ─── */
+export function renderEvents(t, lang) {
+  const tr = t().events;
+  const articles = getArticlesByCategory('event');
+
+  const articleCard = (a) => `
+    <article class="blog-card reveal">
+      <div class="blog-card-img">
+        ${a.image
+          ? `<img src="${a.image}" alt="${a.title[lang] || a.title.fr}" loading="lazy"/>`
+          : `<div class="blog-card-img-placeholder"></div>`
+        }
+      </div>
+      <div class="blog-card-body">
+        <p class="blog-card-date">${a.date}</p>
+        <h3 class="blog-card-title">${a.title[lang] || a.title.fr}</h3>
+        <p class="blog-card-excerpt">${a.excerpt[lang] || a.excerpt.fr}</p>
+        <a href="/evenements/${a.slug}" data-nav="/evenements/${a.slug}" class="btn btn-primary" style="margin-top:1.25rem;display:inline-block;">
+          ${lang === 'zh' ? '阅读更多' : lang === 'fr' ? 'Lire plus' : 'Read more'}
+        </a>
+      </div>
+    </article>
+  `;
+
+  return `
+<div class="page-entry">
+
+  <!-- HEADER -->
+  <section class="section-sm">
+    <div class="wrapper">
+      <div class="reveal">
+        <p class="label mb-2">${tr.overline}</p>
+        <h1>${tr.title}</h1>
+        <p class="lead max-prose mt-3">${tr.lead}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ARTICLES GRID -->
+  <section class="section section-cream">
+    <div class="wrapper">
+      <div class="blog-grid">
+        ${articles.map(articleCard).join('')}
+      </div>
+    </div>
+  </section>
 
 </div>`;
 }
